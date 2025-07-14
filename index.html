@@ -1,0 +1,553 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+       A {text-decoration: none;}
+
+body
+{
+user-select:none;
+ width:100%;
+ height: 100%;
+ margin:0 auto;
+background:#E3EDF7;
+ -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; box-sizing: border-box; content: none;
+ @import "https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css";
+ 
+      }
+
+        .container { 
+            width: auto; 
+            margin: 14px; 
+            padding: 20px; 
+            background: white; 
+            text-align:center;
+            border-radius: 10px; 
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); 
+            margin-top: 20px;
+            position: relative;
+            display: none;
+        }
+        .visible {
+            display: block;
+            }
+            
+        .hidden { display: none; }
+        
+        #timer 
+        { 
+        font-size: 12px; 
+        font-weight: bold; 
+        position:absolute;
+        top: 5px; 
+        }
+        
+        #question{
+        
+        font-family:kadwa;
+            line-height:1.6;
+            background: white; 
+            font-size:14px;
+            font-weight:700;
+            color:deeppink;
+            margin-top: 35px;
+        
+        }
+        
+        #answers-list{
+        font-family:kadwa;
+        font-size:14px;
+        font-weight:300;
+            }
+            
+           p{
+        font-family:kadwa;
+        font-size:14px;
+        font-weight:300;
+            }
+                    
+        #rank{
+        
+        color:deeppink;
+        }
+        
+        #correct{
+        
+        color:green;
+        }
+        
+        #wrong{
+        color:red;
+        }
+        
+        h4{
+        color:blue;
+        background:yellow;
+        padding:5px 10px;
+        border-radius:5px;
+        }
+        
+        .green { color: green; }
+        .red { color: red; }
+        .blink {
+            animation: blink 0.2s infinite alternate;
+        }
+        @keyframes blink {
+            from { opacity: 1; }
+            to { opacity: 0.1; }
+        }
+        button {
+           display: block;
+            width: 100%;
+            padding: 10px;
+            font-family:kadwa;
+            margin: 10px 0;
+            color:#000;
+            font-size: 13px;
+            font-weight:400;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+        .correct { background-color: green !important; color: white; }
+        .wrong { background-color: red !important; color: white; }
+      .disabled { pointer-events: none; opacity: 0.6; }
+        #next-btn { background: #7D0552; color:#fff; font-weight:700; }
+        #next-btn:hover { background: #218838; }
+        canvas { margin-top: 20px; }
+        .result-details { text-align: left; margin-top: 20px; }
+        .explanation-box { 
+            border: 2px solid #007BFF; 
+            background-color: #e7f1ff; 
+            padding: 10px; 
+            border-radius: 5px; 
+            display: none; 
+            margin-top: 10px;
+            font-size:13px;
+        }
+        .question-info {
+            position: absolute;
+            top: 14px;
+            right: 10px;
+            background: #007BFF;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .exp-image {
+    
+    display: block;
+    max-width: 100%;
+    margin-top: 10px;
+    padding: 10px; 
+    margin-left:-10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+.hidden { 
+    display: none; 
+}
+
+
+    </style>
+</head>
+<body>
+<canvas id="my-confetti-canvas" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999;"></canvas>
+<div class="container visible" id="start-screen">
+        <h2 style="color:orange;">Test में आपका स्वागत है!</h2>
+        <p>यह क्विज़ आपके ज्ञान का परीक्षण करेगी। इस क्विज में आपसे 07 से 14 जुलाई, 2025 तक की करेंट अफेयर्स के टॉप चुनिन्दा 20 प्रश्न पूछे जायेंगे प्रत्येक प्रश्न का उत्तर देने के लिए 30 सेकंड मिलेंगे। सही उत्तर के बाद विस्तृत व्याख्या भी मिलेगी।</p>
+        <label>
+            <input type="checkbox" id="accept-terms"><n style="font-family:kadwa; font-size:12px; color:purple;"> मैंने निर्देश पढ़ लिए हैं और मैं टेस्ट शुरू करना चाहता हूँ।
+        </n></label>
+        <br>    <br>
+        <button id="start-btn" disabled onclick="startQuiz()">स्टार्ट टेस्ट</button>
+    </div>
+
+    <div class="container" id="quiz-container">
+        <div class="question-info">Question <span id="current-question">1</span> of <span id="total-questions"></span></div>
+        <h2 id="question"></h2>
+        <div id="options"></div>
+        <p id="explanation" class="explanation-box"></p>
+<img id="exp-image" class="exp-image hidden" src="" alt="Explanation Image">
+        <button onclick="nextQuestion()" class="hidden" id="next-btn">Next Question</button>
+        <p id="timer">Time Left: <span id="time-left">30</span>s</p>
+    </div>
+    
+    <div class="container" id="result-container">
+        <h2>आपका स्कोर: <span id="score"></span>%</h2>
+        <canvas id="scoreChart" width="200" height="200"></canvas>
+        <h3>सही उत्तर: <span id="correct"></span> | गलत उत्तर: <span id="wrong"></span></h3>
+        <h3>आपकी रैंक: <span id="rank"></span></h3>
+        <div class="result-details" id="answers-list"></div>
+    </div>
+
+    <script>
+       document.getElementById("accept-terms").addEventListener("change", function() {
+            document.getElementById("start-btn").disabled = !this.checked;
+        });
+
+        function startQuiz() {
+            document.getElementById("start-screen").classList.remove("visible");
+            document.getElementById("quiz-container").classList.add("visible");
+            document.getElementById("total-questions").textContent = questions.length;
+            loadQuestion();
+        }
+        
+        const questions = [
+           {
+    "q": "17वें BRICS शिखर सम्मेलन का आयोजन कहाँ किया गया ?",
+    "options": ["नई दिल्ली, भारत  ", "मास्को, रूस", "रियो डी जनेरियो, ब्राजील ", "बीजिंग, चीन "],
+    "answer": 2,
+    "exp": {
+      "text": "17th BRICS Summit का आयोजन Rio De Janeiro, Brazil में 6 से 7 जुलाई तक किया गया इस Summit में BRICS ने Pahalgam Terror Attack की भी निंदा की |",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  
+  {
+    "q": "डॉ. जितेन्द्र सिंह द्वारा भारत के पहले 'नेशनल बायोबैंक' का उद्घाटन कहाँ किया गया ?",
+    "options": ["बेंगलुरु", "नई दिल्ली", "पुणे ", "हैदराबाद"],
+    "answer": 1,
+    "exp": {
+      "text": "6 जुलाई को Minster Of Science And Technology Dr. Jitendra Singh द्वारा भारत का पहला National Biobank का उद्घाटन नई दिल्ली में किया गया ।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "ICC के पहले भारतीय CEO कौन बने हैं ?",
+    "options": ["सौरभ गांगुली  ", "जय शाह  ", "राहुल जोहरी   ", "संजोग गुप्ता "],
+    "answer": 3,
+    "exp": {
+      "text": "हाल ही में Sanjog Gupta को International Cricket Council (ICC) का नया CEO नियुक्त किया गया है वे पहले भारतीय हैं जिन्हें CEO बनाया गया है संजोग गुप्ता ने Geoff Allardice (Australia) को Replace किया ।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": " विश्व जनसंख्या दिवस हर साल कब मनाया जाता है ?",
+    "options": ["1 July ", "11 July ", "15 July ", "5 July"],
+    "answer": 1,
+    "exp": {
+      "text": "विश्व जनसंख्या दिवस हर साल 11 जुलाई को मनाया जाता है इस दिवस को United Nations Development Programme (UNDP) द्वारा 1989 में घोषित किया गया था | यह दिवस July 11, 1987 में दुनिया की Population 5 Billion होने की याद में मनाया जाता है",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": " 'जा माता' अभ्यास किन दो देशों के बीच आयोजित किया जाएगा ?",
+    "options": ["India and China", "India and Sri Lanka", "India and Japan", "India and Australia "],
+    "answer": 2,
+    "exp": {
+      "text": "जापान में 'जा माता' का मतलब 'फिर मिलेंगे' होता है इस अभ्यास का उद्येश्य दोनों देशों के बीच समुद्री सहयोग को बढ़ाना है।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "नवजातों के लिए पहले मलेरिया उपचार 'Coartem Baby' को किस देश ने मंजूरी दी है ?",
+    "options": ["संयुक्त राष्ट्र अमेरिका ", "जर्मनी", "यूनाइटेड किंगडम ", "स्विट्ज़रलैंड"],
+    "answer": 3,
+    "exp": {
+      "text": "8 जुलाई को स्विट्ज़रलैंड में Coartem Baby नाम की एक नई दवा को अप्रूवल दिया गया है यह Medicine, Newborns और शिशु के लिए दुनिया की पहली मलेरिया की दवा है।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "कार्नाक ब्रिज, जिसका नाम बदलकर 'सिन्दूर फ्लाईओवर' कर दिया गया है, यह कहाँ स्थित है ?",
+    "options": ["नई दिल्ली  ", "कर्नाटक ", "चेन्नई ", "मुंबई "],
+    "answer": 3,
+    "exp": {
+      "text": "हाल ही में Carnac Bridge का नाम Sindoor Bridge कर दिया गया है यह ब्रिज मुंबई में स्थित है, और यह 154 साल पुराना था, जो कि Insecure पाए जाने के चलते 2022 में गिरा दिया गया था नया ब्रिज बनाने में 3 साल लगे और 60 करोड़ से ज्यादा की लागत आई यह पहले 2-Lane Bridge था, पर अब इसे 4-Lane बनाया गया है । ",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": " मानव-हाथी संघर्ष से निपटने के लिए 'गज मित्र' पहल किस राज्य में शुरू की गई है ?",
+    "options": ["केरल ", "कर्नाटक", "असम  ", "पश्चिम बंगाल"],
+    "answer": 2,
+    "exp": {
+      "text": "इसके तहत जंगल को ज्यादा हरा भरा किया जाएगा ताकि Elephants को Food के लिए दूसरी जगह ना जाना पड़े जंगलों में हाथियों के लिए कई Corridors बनाये जायेंगे।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "नवीनतम फीफा रैंकिंग में भारतीय पुरुष फुटबॉल टीम की रैंक क्या है ?",
+    "options": ["121 ", "133 ", "130", "135"],
+    "answer": 1,
+    "exp": {
+      "text": "FIFA ने हाल ही में Men's Football के लिए अपनी रैंकिंग जारी की है इसमें भारत की 133th Rank आई है, जो कि 9 साल में सबसे ख़राब है | भारत की अब तक की सबसे अच्छी रैंक 94 रही है, जो की 1996 में थी|",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "हाल ही में भारत के किस स्थल को यूनेस्को की विश्व धरोहर सूची में जोड़ा गया है ?",
+    "options": ["मुग़ल गार्डन  ", "विजयनगर के मंदिर  ", "दक्कन सल्तनत के स्मारक", "मराठाओं के किले"],
+    "answer": 3,
+    "exp": {
+      "text": "'भारत का मराठा सैन्य परिदृश्य' संयुक्त राष्ट्र शैक्षिक, वैज्ञानिक और सांस्कृतिक संगठन (यूनेस्को) की विश्व धरोहर सूची में शामिल होने वाली भारत की 44वीं संपत्ति बन गई है। 2024 में, 'असम के मोइदम, अहोम राजवंश की टीला-दफ़नाने की व्यवस्था' को भारत की 43वीं संपत्ति के रूप में यूनेस्को की विश्व धरोहर सूची में शामिल किया गया। यूनेस्को की विश्व धरोहर समिति के 47वें वार्षिक सत्र, जो 6 से 16 जुलाई 2025 तक पेरिस, फ्रांस में आयोजित किया जा रहा है, ने विश्व धरोहर सूची में अंकित करने के लिए भारत के ‘मराठा सैन्य परिदृश्य’ के नामांकन को स्वीकार कर लिया। मराठा सैन्य परिदृश्य 17वीं से 19वीं शताब्दी सीई (सामान्य युग जिसे पहले ईस्वी के रूप में जाना जाता था) के दौरान मराठा साम्राज्य द्वारा निर्मित बारह किलों का एक शृंखला है। इसमें महाराष्ट्र के 11 किले (सलहेर, शिवनेरी, लोहागढ़, खंडेरी, रायगढ़, राजगढ़, प्रतापगढ़, सुवर्णदुर्ग, पन्हाला, विजयदुर्ग और सिंधुदुर्ग।) और तमिलनाडु का एक जिंजी किला शामिल है।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "भारत के 87वें ग्रैंडमास्टर कौन बने हैं ?",
+    "options": ["Harikrishnan A  ", "R Praggnanandhaa", "Vidit Gujrathi", "Gukesh D"],
+    "answer": 0,
+    "exp": {
+      "text": "चेन्नई के 23 वर्षीय शतरंज खिलाड़ी हरिकृष्णन ए. रा. ने 11 जुलाई 2025 को फ्रांस में आयोजित ला प्लेग्ने इंटरनेशनल चेस फेस्टिवल में अपना अंतिम ग्रैंडमास्टर (GM) नॉर्म पूरा कर भारत के 87वें ग्रैंडमास्टर बनने का गौरव प्राप्त किया। यह उपलब्धि उन्होंने इंटरनेशनल मास्टर (IM) बनने के सात साल बाद हासिल की।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  
+  {
+    "q": " भारत का पहला QR-आधारित डिजिटल हाउस एड्रेस सिस्टम कहाँ लांच किया गया है ?",
+    "options": ["जयपुर ", "पुणे  ", "इंदौर", "सूरत "],
+    "answer": 2,
+    "exp": {
+      "text": "Indore, Madhya Pradesh में भारत का पहला QR-आधारित Digital House Address System को Launch किया है इसे Indore Municipal Corporation (IMC) के द्वारा लांच किया गया है | इसके तहत घरों में पारंपरिक Address की जगह QR Code वाली Plates लगाईं जायेंगी इन Plates में घर की GPS Location भी होगी|",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "हाल ही में स्वीकृत Arunachal Frontier Highway किस टाइगर रिज़र्व से होकर गुजरेगा ?",
+    "options": ["पन्ना टाइगर रिज़र्व", "मानस टाइगर रिज़र्व ", "काजीरंगा टाइगर रिज़र्व ", "नागदफा टाइगर रिज़र्व "],
+    "answer": 3,
+    "exp": {
+      "text": "यह प्रोजेक्ट, अरुणाचल प्रदेश के नागदफा टाइगर रिज़र्व के Core Area से होकर जाएगा इसके लिए नागदफा टाइगर रिज़र्व से 310 हैक्टेयर जंगल को हटाया जाएगा जिसके कारण यह प्रोजेक्ट विवादों में है।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": " पहली बार T20 विश्व कप 2026 के लिए किस देश ने क्वालीफाई किया है ?",
+    "options": ["जर्मनी", "इटली ", "नीदरलैंड ", "डेनमार्क "],
+    "answer": 1,
+    "exp": {
+      "text": "11 जुलाई को इटली T20 World Cup 2026 के लिए Qualify हो गया है इटली पहली बार T20 वर्ल्ड कप 2026 के लिए Qualify हुआ है | 2026 में T20 World Cup के 10वें एडिशन का आयोजन भारत और श्रीलंका में फरवरी - मार्च में किया जाएगा।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "2025 संयुक्त राष्ट्र जनसंख्या पुरस्कार किसने जीता है ?",
+    "options": ["Sudha Murty ", "Kiran Bedi", "Varsha Deshpande", "Medha Patkar"],
+    "answer": 2,
+    "exp": {
+      "text": "11 जुलाई को महाराष्ट्र की वर्षा देशपांडे को United Nations Population Award दिया गया यह पुरस्कार उन्हें विश्व जनसंख्या दिवस पर दिया गया | यह सम्मान उन्हें लिंग-आधारित गर्भपात को रोकने और लैंगिक समानता को बढ़ावा देने के लिए दिया गया ।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": " हाल ही में राष्ट्रपति द्रोपदी मुर्मू द्वारा कितने व्यक्तियों को राज्यसभा के लिए मनोनीत किया गया है ?",
+    "options": ["3", "5", "4", "6"],
+    "answer": 2,
+    "exp": {
+      "text": "राष्ट्रपति द्रौपदी मुर्मू ने उज्ज्वल निकम, सी. सदानंदन मास्टर, हर्षवर्धन श्रृंगला और डॉ. मीनाक्षी जैन को राज्यसभा की सदस्यता की शपथ लेने की तिथि से छह वर्ष की अवधि के लिए राज्यसभा का सदस्य मनोनीत किया है। इस आशय की अधिसूचना केंद्रीय गृह मंत्रालय द्वारा 12 जुलाई 2025 को जारी की गई। संविधान के अनुच्छेद 80 के अनुसार, राज्यसभा की कुल सदस्य संख्या 250 है। हालाँकि, राज्यसभा की वर्तमान सदस्य संख्या 245 है, जिसमें 233 सदस्य 28 राज्यों और केंद्र शासित प्रदेशों का प्रतिनिधित्व करते हैं।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "हाल ही में भारतीय सेना द्वारा अमरनाथ यात्रा की सुरक्षा के लिए कौन सा ऑपरेशन शुरू किया गया है ?",
+    "options": ["ऑपरेशन सुरक्षा  ", "ऑपरेशन शिवा", "ऑपरेशन रूद्र  ", "ऑपरेशन शक्ति "],
+    "answer": 1,
+    "exp": {
+      "text": "भारतीय सेना ने जम्मू-कश्मीर में श्री अमरनाथ यात्रा की सुरक्षित और सुचारू रूप से संचालन सुनिश्चित करने के लिए “ऑपरेशन शिवा 2025” की शुरुआत की है। इस वर्ष पाकिस्तान समर्थित आतंकवादी समूहों से बढ़ते खतरे के कारण यह सुरक्षा अभियान अत्यंत महत्वपूर्ण हो गया है। ऑपरेशन शिवा 2025 के तहत, सेना ने यात्रा के उत्तर और दक्षिण मार्गों पर 8,500 से अधिक जवानों को तैनात किया है। यह प्रयास नागरिक प्रशासन और केंद्रीय सशस्त्र पुलिस बलों (CAPFs) के साथ समन्वय में किया गया है। ",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "हाल ही में प्रधानमन्त्री नरेंद्र मोदी को किस देश ने अपने सर्वोच्च सम्मान 'ग्रैंड कॉलर ऑफ सदर्न क्रॉस' से सम्मानित किया है ?",
+    "options": ["इंडोनेशिया  ", "ब्राजील ", "वियतनाम  ", "इटली "],
+    "answer": 1,
+    "exp": {
+      "text": "ब्राजील के राष्ट्रपति लुईस इनासियो लूला दा सिल्वा ने 8 जुलाई 2025 को ब्रासीलिया में आयोजित एक समारोह में भारत के प्रधानमंत्री नरेंद्र मोदी को देश के सर्वोच्च नागरिक पुरस्कार - द ग्रैंड कॉलर ऑफ द नेशनल ऑर्डर ऑफ द सदर्न क्रॉस से सम्मानित किया। प्रधानमंत्री मोदी 2 से 9 जुलाई 2025 तक घाना, त्रिनिदाद और टोबैगो, अर्जेंटीना, ब्राजील और नामीबिया की पांच देशों की राजकीय यात्रा पर हैं। अपनी पांच देशों की राजकीय यात्रा के दौरान, प्रधानमंत्री मोदी को घाना के सर्वोच्च पुरस्कार, 'द ऑर्डर ऑफ द स्टार ऑफ घाना' और त्रिनिदाद और टोबैगो के सर्वोच्च सम्मान, 'द ऑर्डर ऑफ द रिपब्लिक ऑफ त्रिनिदाद एंड टोबैगो' से सम्मानित किया गया है।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": " हाल ही में चर्चा में रही सरकारी नौकरियों से सम्बंधित डोमिसाइल Policy निम्न में से किस राज्य में लागू नहीं है ?",
+    "options": ["मध्यप्रदेश", "बिहार", "उत्तर प्रदेश", "राजस्थान"],
+    "answer": 2,
+    "exp": {
+      "text": "बिहार सरकार ने महिलाओं के लिए डोमिसाइल पॉलिसी लागू कर दी है। अब सरकारी नौकरियों में महिलाओं को इसका फायदा मिलेगा। बिहार की बाहर की महिलाओं को जनरल कैटेगरी में जोड़ा जाएगा। बिहार सरकार ने महिलाओं के लिए डोमिसाइल पॉलिसी लागू कर दी है। अब सरकारी नौकरियों में महिलाओं को इसका फायदा मिलेगा। बिहार की बाहर की महिलाओं को जनरल कैटेगरी में जोड़ा जाएगा। इसके साथ ही मध्यप्रदेश, हरियाणा, हिमाचल प्रदेश, उत्तराखंड एवं राजस्थान के बाद बिहार भारत का छठवां राज्य बना जिसने यह पॉलिसी लागू की।",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  },
+  {
+    "q": "हाल ही में कौन सूरीनाम की पहली महिला राष्ट्रपति बनीं हैं ?",
+    "options": ["जेनिफर गेर्लिंग्स साइमंस ", "एलिसा मार्गरेट ", "स्टेनली ब्रोंकस मेनुस ", "सोफिया मेंड्स अकार्स"],
+    "answer": 0,
+    "exp": {
+      "text": "71 वर्षीय डॉक्टर और सांसद जेनिफर गेरलिंग्स-साइमन्स को सुरिनाम की नेशनल असेंबली ने राष्ट्रपति चुना। यह असेंबली दो-तिहाई बहुमत से राष्ट्रपति का चुनाव करती है। वे बिना विरोध के चुनी गईं, क्योंकि मई 2025 के आम चुनाव में स्पष्ट बहुमत न मिलने के बाद उनकी पार्टी ने सफलतापूर्वक गठबंधन बनाकर सत्ता में आने का मार्ग प्रशस्त किया था। ",
+      "image": "https://www.freepnglogos.com/uploads/divider-png/divider-boards-and-pavement-signs-bury-manchester-15.png"
+    }
+  }     
+            
+        ];
+        
+        // प्रश्नों को शफल करें
+shuffleArray(questions);
+ let currentQuestion = 0, correctAnswers = 0, wrongAnswers = 0, timerInterval, timeLeft;
+    document.getElementById("total-questions").textContent = questions.length;
+
+    // CONFETTI SETUP
+    const myCanvas = document.getElementById('my-confetti-canvas');
+    const myConfetti = confetti.create(myCanvas, {
+        resize: true,
+        useWorker: true
+    });
+
+    function confetti() {
+        myConfetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 30;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                showCorrectAnswer();
+                document.getElementById("next-btn").classList.remove("hidden");
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        let timerElement = document.getElementById("time-left");
+        timerElement.textContent = timeLeft;
+        if (timeLeft > 15) {
+            timerElement.classList.remove("red", "blink");
+            timerElement.classList.add("green");
+        } else {
+            timerElement.classList.remove("green");
+            timerElement.classList.add("red", "blink");
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let loader = document.getElementById("loader");
+        let quizContainer = document.getElementById("quiz-container");
+        setTimeout(() => {
+            loader.classList.add("hidden");
+            quizContainer.classList.remove("hidden");
+        }, 2000);
+    });
+
+    function loadQuestion() {
+        if (currentQuestion >= questions.length) return showResults();
+
+        document.getElementById("question").textContent = questions[currentQuestion].q;
+        document.getElementById("current-question").textContent = currentQuestion + 1;
+        let optionsHtml = "";
+        questions[currentQuestion].options.forEach((opt, index) => {
+            optionsHtml += `<button id='option-${index}' onclick='selectAnswer(${index})'>${opt}</button>`;
+        });
+        document.getElementById("options").innerHTML = optionsHtml;
+        document.getElementById("explanation").style.display = "none";
+        document.getElementById("next-btn").classList.add("hidden");
+        startTimer();
+    }
+
+    function selectAnswer(selected) {
+        clearInterval(timerInterval);
+        let correctIndex = questions[currentQuestion].answer;
+        document.getElementById(`option-${correctIndex}`).classList.add("correct");
+
+        if (selected === correctIndex) {
+            correctAnswers++;
+            confetti();
+        } else {
+            wrongAnswers++;
+            document.getElementById(`option-${selected}`).classList.add("wrong");
+        }
+
+        let explanation = questions[currentQuestion].exp;
+        document.getElementById("explanation").textContent = explanation.text;
+        document.getElementById("explanation").style.display = "block";
+
+        if (explanation.image) {
+            document.getElementById("exp-image").src = explanation.image;
+            document.getElementById("exp-image").classList.remove("hidden");
+        } else {
+            document.getElementById("exp-image").classList.add("hidden");
+        }
+
+        document.getElementById("next-btn").classList.remove("hidden");
+        disableOptions();
+    }
+
+    function disableOptions() {
+        const buttons = document.querySelectorAll("#options button");
+        buttons.forEach(button => button.classList.add("disabled"));
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        loadQuestion();
+    }
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    function showCorrectAnswer() {
+        let correctIndex = questions[currentQuestion].answer;
+        document.getElementById(`option-${correctIndex}`).classList.add("correct");
+        document.getElementById("explanation").textContent = questions[currentQuestion].exp;
+        document.getElementById("explanation").classList.remove("hidden");
+        disableOptions();
+    }
+
+    function showResults() {
+        document.getElementById("quiz-container").classList.remove("visible");
+        document.getElementById("result-container").classList.add("visible");
+        document.getElementById("score").textContent = ((correctAnswers / questions.length) * 100).toFixed(2);
+        document.getElementById("correct").textContent = correctAnswers;
+        document.getElementById("wrong").textContent = wrongAnswers;
+        document.getElementById("rank").textContent = calculateRank(score);
+
+        let answerHtml = "<h4>All Questions & Answers:</h4>";
+        questions.forEach((q, index) => {
+            answerHtml += `<p><strong>Q${index + 1}:</strong> ${q.q} <br> <strong>Answer:</strong> ${q.options[q.answer]} <br> <strong>Explanation:</strong> ${q.exp}</p>`;
+        });
+        document.getElementById("answers-list").innerHTML = answerHtml;
+
+        new Chart(document.getElementById("scoreChart"), {
+            type: 'pie',
+            data: {
+                labels: ["Correct", "Wrong"],
+                datasets: [{
+                    data: [correctAnswers, wrongAnswers],
+                    backgroundColor: ["green", "red"]
+                }]
+            }
+        });
+    }
+
+    function calculateRank(score) {
+        if (score >= 95) return Math.floor(Math.random() * 4) + 1;
+        if (score >= 90) return Math.floor(Math.random() * 195) + 5;
+        if (score >= 50) return Math.floor(Math.random() * 19800) + 200;
+        return Math.floor(Math.random() * 30000) + 20000;
+    }
+
+    loadQuestion();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti"></script>
+</body>
+</html>
