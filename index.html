@@ -5,7 +5,7 @@
   <style>
     body { background-color: #c1cefa; font-family:anek devanagari; user-select:none; margin: 0 10px;
  }
-    .card { background-color: orange; color: purple; border-radius: 2rem 2rem 0rem 0rem; margin-top:120px; padding: 2rem 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .card { background-color: #000; color: white; border-radius: 2rem 2rem 0rem 0rem; margin-top:120px; padding: 2rem 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     .option { border: 1px solid rgb(52,52,21,0.2); border-radius: 1rem; padding: 0.5rem 1rem; margin: 0.5rem 0; color:#000; font-size:13px; cursor: pointer; }
     #questionText {color:#000; line-height:1.7; font-weight:700; font-size:14.5px;}
     
@@ -47,17 +47,17 @@
 
   /* Timer Alert Text */
   #timerrc1Text {
-    font-size: 8px;
+    font-size: 9px;
     position:absolute;
     color: red; /* Tailwind red-600 */
     font-weight: 600;
-    width:65px;
+    width:70px;
     margin-top:14px;
     background:#fff;
     line-height:20px;
     padding:0px 5px;
     border-radius:25px 20px 0px 0px;
-    right:35px;
+    right:30px;
     animation: fadeIn 0.4s ease-in-out;
     min-height: 1.2rem;
   }
@@ -136,7 +136,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: orange;
+    background: #000;
     padding: 10px 20px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -148,13 +148,13 @@
     letter-spacing:0.5px;
     font-weight: 700;
     line-height:1.5;
-    color: deeppink;
+    color: orange;
   }
  
  .palette-scroll-container {
   display: flex;
   flex-wrap: wrap;              /* ✅ लाइन ब्रेक की अनुमति */
-  max-height: 92px;            /* ✅ कंटेनर की सीमित ऊँचाई */
+  max-height: 76px;            /* ✅ कंटेनर की सीमित ऊँचाई */
   overflow-y: auto;             /* ✅ नीचे की ओर scroll */
   overflow-x: hidden;           /* ✅ horizontal scroll बंद */
   gap: 10px;
@@ -171,8 +171,8 @@
   border-radius: 4px;
 }
 .palette-btn {
-  width: 1.3rem;                 /* w-8 */
-  height: 1.3rem;                /* h-8 */
+  width: 1.5rem;                 /* w-8 */
+  height: 1.5rem;                /* h-8 */
   border-radius: 9999px;       /* rounded-full */
   border: 1px solid #ccc;      /* border */
   font-size: 9px;         /* text-sm */
@@ -282,7 +282,7 @@
 <!-- Quiz Page -->
 <div id="quizPagerc1" class="quiz-card w-96 hidden">
 <div id="topBar" class="flex justify-between items-center bg-white shadow p-3 rounded-xl mb-4">
-  <div id="quizTitle" class="text-sm font-semibold text-gray-800">साप्ताहिक करेंट अफेयर्स Quick Revision<br><span style="font-size:10px; color:#000; letter-spacing:0.5px;">07 से 14 जुलाई, 2025</span></div>
+  <div id="quizTitle" class="text-sm font-semibold text-gray-800">साप्ताहिक करेंट अफेयर्स Quick Revision<br><span style="font-size:10px; color:#ccc; letter-spacing:0.5px;">07 से 14 जुलाई, 2025</span></div>
    <div id="timerSection">
   <div id="timerrc1">30s</div>
   <div id="timerrc1Text"></div>
@@ -314,7 +314,7 @@
   <div id="descriptionText"></div>
 </div>
   <br>
- <div id="nextBtnWrapperrc1" class="fixed bottom-0 left-0 w-full px-4 py-2 bg-white border-t shadow-md">
+ <div id="nextBtnWrapperrc1" class="fixed bottom-0 left-0 w-full px-4 py-2 bg-none shadow-md">
   <button id="nextBtnrc1"
     onclick="submitAnswer()"
     class="w-full bg-purple-600 text-white font-bold text-sm py-2 rounded-full transition duration-300 ease-in-out hover:bg-purple-700 shadow-xl">
@@ -326,9 +326,9 @@
 <!-- Result Page -->
 <div id="resultPagerc1" class="card w-full max-w-md mx-1.5 hidden text-center">
 <img width="100%" src="https://m2.getsitecontrol.com/images/273034/0ff8233be52678d52622d05360d9c148_332491178.png" style="position:absolute; height:150px; border-radius: 0px 0px 20px 20px; left:0px; top:0px; z-index:-1;" />
-<h2 id="quizTitleResult" class="text-2xl font-bold text-center text-purple-800 mb-2">साप्ताहिक करेंट अफेयर्स Quick Revision</h2>
-  <div class="text-2xl mb-4">Your Score<br><span id="finalScorerc1" class="text-4xl font-bold">0 %</span></div>
-  <div id="userRankrc1" class="mt-4 text-white text-lg font-semibold text-center"></div><br>
+<h2 id="quizTitleResult" class="text-2xl font-bold text-center text-red-600 mb-2">साप्ताहिक करेंट अफेयर्स Quick Revision</h2>
+  <div class="text-2xl mb-4">Your Score<br><span id="finalScorerc1" class="text-4xl text-yellow-600 font-bold">0 %</span></div>
+  <div id="userRankrc1" class="mt-4 text-green-600 text-lg font-semibold text-center"></div><br>
   <div class="bg-white text-purple-700 p-2 rounded-lg shadow mb-4">
     <div class="flex justify-between gap-2 mt-0 text-sm">
       <div>
